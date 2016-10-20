@@ -26,8 +26,8 @@ class PhysicProcessor(Processor):
             # adjust the position back inside screen boundaries if it tries to go outside:
             position.x = max(self.minx, position.x)
             position.y = max(self.miny, position.y)
-            position.x = min(self.maxx, position.x)
-            position.y = min(self.maxy, position.y)
+            position.x = min(self.maxx-1, position.x)
+            position.y = min(self.maxy-1, position.y)
 
     def process_velocity(self, ent, vel, position):
         # Update the Renderable Component's position by it's Velocity:
