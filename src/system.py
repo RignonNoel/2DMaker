@@ -39,48 +39,52 @@ class PhysicProcessor(Processor):
             for x in range(1, vel.x+1):
                 for entity in self.world.get_entities():
                     if entity != ent:
-                        other_x = self.world.component_for_entity(entity, Position).x
-                        other_y = self.world.component_for_entity(entity, Position).y
+                        if self.world.has_component(entity, Collideable):
+                            other_x = self.world.component_for_entity(entity, Position).x
+                            other_y = self.world.component_for_entity(entity, Position).y
 
-                        if other_y == position.y and other_x == position.x + x:
-                            position.x = other_x - 1
-                            collision_x = True
+                            if other_y == position.y and other_x == position.x + x:
+                                position.x = other_x - 1
+                                collision_x = True
 
         # Entity go to the left
         if vel.x < 0:
             for x in range(vel.x, 0):
                 for entity in self.world.get_entities():
                     if entity != ent:
-                        other_x = self.world.component_for_entity(entity, Position).x
-                        other_y = self.world.component_for_entity(entity, Position).y
+                        if self.world.has_component(entity, Collideable):
+                            other_x = self.world.component_for_entity(entity, Position).x
+                            other_y = self.world.component_for_entity(entity, Position).y
 
-                        if other_y == position.y and other_x == position.x + x:
-                            position.x = other_x + 1
-                            collision_x = True
+                            if other_y == position.y and other_x == position.x + x:
+                                position.x = other_x + 1
+                                collision_x = True
 
         # Entity go to the top
         if vel.y > 0:
             for y in range(1, vel.y+1):
                 for entity in self.world.get_entities():
                     if entity != ent:
-                        other_x = self.world.component_for_entity(entity, Position).x
-                        other_y = self.world.component_for_entity(entity, Position).y
+                        if self.world.has_component(entity, Collideable):
+                            other_x = self.world.component_for_entity(entity, Position).x
+                            other_y = self.world.component_for_entity(entity, Position).y
 
-                        if other_y == position.y + y and other_x == position.x:
-                            position.y = other_y - 1
-                            collision_y = True
+                            if other_y == position.y + y and other_x == position.x:
+                                position.y = other_y - 1
+                                collision_y = True
 
         # Entity go to the bottom
         if vel.y < 0:
             for y in range(vel.y, 0):
                 for entity in self.world.get_entities():
                     if entity != ent:
-                        other_x = self.world.component_for_entity(entity, Position).x
-                        other_y = self.world.component_for_entity(entity, Position).y
+                        if self.world.has_component(entity, Collideable):
+                            other_x = self.world.component_for_entity(entity, Position).x
+                            other_y = self.world.component_for_entity(entity, Position).y
 
-                        if other_y == position.y + y and other_x == position.x:
-                            position.y = other_y + 1
-                            collision_y = True
+                            if other_y == position.y + y and other_x == position.x:
+                                position.y = other_y + 1
+                                collision_y = True
 
         # If no collision, we move to the new position
         if not collision_x:
