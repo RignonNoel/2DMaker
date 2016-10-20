@@ -18,16 +18,31 @@ class PhysicProcessor(Processor):
 
     def process(self):
         # This will iterate over every Entity that has BOTH of these components:
-        for ent, (vel, position) in self.world.get_components(Velocity, Position):
-
+        for ent, (vel, position, direction) in self.world.get_components(Velocity, Position, Direction):
+            # Update with velocity
             self.process_velocity(ent, vel, position)
 
-            # An example of keeping the sprite inside screen boundaries. Basically,
-            # adjust the position back inside screen boundaries if it tries to go outside:
+            # Update direction of entities
+            self.process_direction(vel, direction)
+
+            # Keep the player in the map
             position.x = max(self.minx, position.x)
             position.y = max(self.miny, position.y)
             position.x = min(self.maxx-1, position.x)
             position.y = min(self.maxy-1, position.y)
+
+    def process_direction(self, vel, direction):
+        if vel.x > 0 and abs(vel.x) > abs(vel.y):
+            direction.direction = 'RIGHT'
+
+        if vel.x < 0 and abs(vel.x) > abs(vel.y):
+            direction.direction = 'LEFT'
+
+        if vel.y > 0 and abs(vel.y) > abs(vel.x):
+            direction.direction = 'TOP'
+
+        if vel.y < 0 and abs(vel.y) > abs(vel.x):
+            direction.direction = 'BOTTOM'
 
     def process_velocity(self, ent, vel, position):
         # Update the Renderable Component's position by it's Velocity:
@@ -93,6 +108,7 @@ class PhysicProcessor(Processor):
         if not collision_y:
             position.y += vel.y
 
+
 class RenderProcessor(Processor):
     def __init__(self, window, minx, maxx, miny, maxy, map, tiles_map, tiles_player, clear_color=(0, 0, 0), tiles_width=16):
         super().__init__()
@@ -121,7 +137,18 @@ class RenderProcessor(Processor):
 
         # This will iterate over every Entity that has this Component, and blit it:
         for ent, (position, renderable) in self.world.get_components(Position, Renderable):
-            self.display_image(renderable.image, position.x, position.y)
+            if self.world.has_component(ent, Direction):
+                direction = self.world.component_for_entity(ent, Direction)
+                if direction.direction == 'LEFT':
+                    self.display_image(renderable.image_left, position.x, position.y)
+                if direction.direction == 'RIGHT':
+                    self.display_image(renderable.image_right, position.x, position.y)
+                if direction.direction == 'TOP':
+                    self.display_image(renderable.image_top, position.x, position.y)
+                if direction.direction == 'BOTTOM':
+                    self.display_image(renderable.image_bottom, position.x, position.y)
+            else:
+                self.display_image(renderable.image_bottom, position.x, position.y)
 
         # Flip the framebuffers
         pygame.display.flip()
@@ -150,5 +177,3 @@ class RenderProcessor(Processor):
 
     def display_tiles(self, tile_x, tile_y, position_x, position_y, tile_manager):
         self.window.blit(tile_manager.get_tile(tile_x, tile_y), (position_x*self.tiles_width, position_y*self.tiles_width))
-
-

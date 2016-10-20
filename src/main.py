@@ -43,10 +43,16 @@ def run():
 
     # Create a "player" Entity with a few Components.
     player = world.create_entity()
+    world.add_component(player, Direction())
     world.add_component(player, Position(x=0, y=0))
     world.add_component(player, Velocity(x=0, y=0))
     world.add_component(player, Collideable())
-    world.add_component(player, Renderable(image=tiles_player.get_tile(4, 0)))
+    world.add_component(player, Renderable(
+        image_bottom=tiles_player.get_tile(4, 0),
+        image_left=tiles_player.get_tile(4, 1),
+        image_right=tiles_player.get_tile(4, 2),
+        image_top=tiles_player.get_tile(4, 3)
+    ))
 
     """
     Create a house to test the map
@@ -56,56 +62,56 @@ def run():
         bloc = world.create_entity()
         world.add_component(bloc, Position(x=x, y=3))
         world.add_component(bloc, Collideable())
-        world.add_component(bloc, Renderable(image=tiles_map.get_tile(0, 0)))
+        world.add_component(bloc, Renderable(tiles_map.get_tile(0, 0)))
 
     # Bottom right
     for x in range(25, 28):
         bloc = world.create_entity()
         world.add_component(bloc, Position(x=x, y=3))
         world.add_component(bloc, Collideable())
-        world.add_component(bloc, Renderable(image=tiles_map.get_tile(0, 0)))
+        world.add_component(bloc, Renderable(tiles_map.get_tile(0, 0)))
 
     # Top
     for x in range(21, 28):
         bloc = world.create_entity()
         world.add_component(bloc, Position(x=x, y=9))
         world.add_component(bloc, Collideable())
-        world.add_component(bloc, Renderable(image=tiles_map.get_tile(0, 0)))
+        world.add_component(bloc, Renderable(tiles_map.get_tile(0, 0)))
 
     # Left
     for y in range(4, 9):
         bloc = world.create_entity()
         world.add_component(bloc, Position(x=20, y=y))
         world.add_component(bloc, Collideable())
-        world.add_component(bloc, Renderable(image=tiles_map.get_tile(1, 0)))
+        world.add_component(bloc, Renderable(tiles_map.get_tile(1, 0)))
 
     # Right
     for y in range(4, 9):
         bloc = world.create_entity()
         world.add_component(bloc, Position(x=28, y=y))
         world.add_component(bloc, Collideable())
-        world.add_component(bloc, Renderable(image=tiles_map.get_tile(1, 0)))
+        world.add_component(bloc, Renderable(tiles_map.get_tile(1, 0)))
 
     # Blocs for corner
     bloc = world.create_entity()
     world.add_component(bloc, Position(x=20, y=9))
     world.add_component(bloc, Collideable())
-    world.add_component(bloc, Renderable(image=tiles_map.get_tile(3, 0)))
+    world.add_component(bloc, Renderable(tiles_map.get_tile(3, 0)))
 
     bloc = world.create_entity()
     world.add_component(bloc, Position(x=28, y=9))
     world.add_component(bloc, Collideable())
-    world.add_component(bloc, Renderable(image=tiles_map.get_tile(3, 0)))
+    world.add_component(bloc, Renderable(tiles_map.get_tile(3, 0)))
 
     bloc = world.create_entity()
     world.add_component(bloc, Position(x=28, y=3))
     world.add_component(bloc, Collideable())
-    world.add_component(bloc, Renderable(image=tiles_map.get_tile(2, 0)))
+    world.add_component(bloc, Renderable(tiles_map.get_tile(2, 0)))
 
     bloc = world.create_entity()
     world.add_component(bloc, Position(x=20, y=3))
     world.add_component(bloc, Collideable())
-    world.add_component(bloc, Renderable(image=tiles_map.get_tile(2, 0)))
+    world.add_component(bloc, Renderable(tiles_map.get_tile(2, 0)))
 
     """
     End of the house
