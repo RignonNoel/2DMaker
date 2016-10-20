@@ -1,6 +1,9 @@
-from world import *
+from PIL import Image
 import pygame
+
+from world import *
 from components import *
+from TilesManager import *
 
 ################################
 #  Define some Processors:
@@ -16,46 +19,9 @@ class PhysicProcessor(Processor):
     def process(self):
         # This will iterate over every Entity that has BOTH of these components:
         for ent, (vel, position) in self.world.get_components(Velocity, Position):
-            # Lost of velocity from gravity
-            vel.y -= 1
 
-            # Update the Renderable Component's position by it's Velocity:
-            for entity in self.world.get_entities():
-                if entity != ent:
-                    other_x = self.world.component_for_entity(entity, Position).x
-                    other_y = self.world.component_for_entity(entity, Position).y
+            self.process_velocity(ent, vel, position)
 
-                    # Entity go to the right
-                    if vel.x >= 0:
-                        if other_y == position.y and other_x in range(position.x, position.x+vel.x + 1):
-                            print('Seems you have a collision!')
-                            position.x = other_x - 1
-                        else:
-                            position.x += vel.x
-
-                    # Entity go to the right
-                    if vel.x < 0:
-                        if other_y == position.y and other_x in range(position.x + vel.x, position.x + 1):
-                            print('Seems you have a collision!')
-                            position.x = other_x + 1
-                        else:
-                            position.x += vel.x
-
-                    # Entity go to the top
-                    if vel.y >= 0:
-                        if other_x == position.x and other_y in range(position.y, position.y + vel.y + 1):
-                            print('Ouch! Your head in the top!')
-                            position.y = other_y - 1
-                        else:
-                            position.y += vel.y
-
-                    # Entity go to the bottom
-                    if vel.y < 0:
-                        if other_x == position.x and other_y in range(position.y + vel.y, position.y + 1):
-                            print("Oh! It's a step!!")
-                            position.y = other_y + 1
-                        else:
-                            position.y += vel.y
             # An example of keeping the sprite inside screen boundaries. Basically,
             # adjust the position back inside screen boundaries if it tries to go outside:
             position.x = max(self.minx, position.x)
@@ -63,9 +29,68 @@ class PhysicProcessor(Processor):
             position.x = min(self.maxx, position.x)
             position.y = min(self.maxy, position.y)
 
+    def process_velocity(self, ent, vel, position):
+        # Update the Renderable Component's position by it's Velocity:
+        collision_x = False
+        collision_y = False
+
+        # Entity go to the right
+        if vel.x > 0:
+            for x in range(1, vel.x+1):
+                for entity in self.world.get_entities():
+                    if entity != ent:
+                        other_x = self.world.component_for_entity(entity, Position).x
+                        other_y = self.world.component_for_entity(entity, Position).y
+
+                        if other_y == position.y and other_x == position.x + x:
+                            position.x = other_x - 1
+                            collision_x = True
+
+        # Entity go to the left
+        if vel.x < 0:
+            for x in range(vel.x, 0):
+                for entity in self.world.get_entities():
+                    if entity != ent:
+                        other_x = self.world.component_for_entity(entity, Position).x
+                        other_y = self.world.component_for_entity(entity, Position).y
+
+                        if other_y == position.y and other_x == position.x + x:
+                            position.x = other_x + 1
+                            collision_x = True
+
+        # Entity go to the top
+        if vel.y > 0:
+            for y in range(1, vel.y+1):
+                for entity in self.world.get_entities():
+                    if entity != ent:
+                        other_x = self.world.component_for_entity(entity, Position).x
+                        other_y = self.world.component_for_entity(entity, Position).y
+
+                        if other_y == position.y + y and other_x == position.x:
+                            position.y = other_y - 1
+                            collision_y = True
+
+        # Entity go to the bottom
+        if vel.y < 0:
+            for y in range(vel.y, 0):
+                for entity in self.world.get_entities():
+                    if entity != ent:
+                        other_x = self.world.component_for_entity(entity, Position).x
+                        other_y = self.world.component_for_entity(entity, Position).y
+
+                        if other_y == position.y + y and other_x == position.x:
+                            position.y = other_y + 1
+                            collision_y = True
+
+        # If no collision, we move to the new position
+        if not collision_x:
+            position.x += vel.x
+
+        if not collision_y:
+            position.y += vel.y
 
 class RenderProcessor(Processor):
-    def __init__(self, window, minx, maxx, miny, maxy, clear_color=(0, 0, 0), tiles_width=16):
+    def __init__(self, window, minx, maxx, miny, maxy, map, tiles_map, tiles_player, clear_color=(0, 0, 0), tiles_width=16):
         super().__init__()
         self.window = window
         self.clear_color = clear_color
@@ -75,14 +100,51 @@ class RenderProcessor(Processor):
         self.miny = miny
         self.maxy = maxy
 
+        self.map = map
+        self.margin = 0
+
+        self.tiles_map = tiles_map
+        self.tiles_player = tiles_player
+
         self.tiles_width = tiles_width
 
     def process(self):
         # Clear the window:
         self.window.fill(self.clear_color)
 
+        # Display the map before each renderable entities
+        self.display_map()
+
         # This will iterate over every Entity that has this Component, and blit it:
         for ent, (position, renderable) in self.world.get_components(Position, Renderable):
-            self.window.blit(renderable.image, (position.x*self.tiles_width, (self.maxy-position.y-1)*self.tiles_width))
+            self.display_image(renderable.image, position.x, position.y)
+
         # Flip the framebuffers
         pygame.display.flip()
+
+    def display_map(self):
+        compteur_y = 0
+        # Reverse the top/bottom of the map to display
+        for line in self.map.map:
+            compteur_x = 0
+            for tile in line:
+                if tile == 0:
+                    self.display_tiles(0, 8, compteur_x, compteur_y, self.tiles_map)
+                if tile == 1:
+                    self.display_tiles(2, 1, compteur_x, compteur_y, self.tiles_map)
+                if tile == 2:
+                    self.display_tiles(4, 1, compteur_x, compteur_y, self.tiles_map)
+                if tile == 3:
+                    self.display_tiles(0, 1, compteur_x, compteur_y, self.tiles_map)
+                if tile == 'e':
+                    self.display_tiles(1, 7, compteur_x, compteur_y, self.tiles_map)
+                compteur_x += 1
+            compteur_y += 1
+
+    def display_image(self, image, position_x, position_y):
+        self.window.blit(image, (position_x*self.tiles_width, (self.maxy-position_y-1)*self.tiles_width))
+
+    def display_tiles(self, tile_x, tile_y, position_x, position_y, tile_manager):
+        self.window.blit(tile_manager.get_tile(tile_x, tile_y), (position_x*self.tiles_width, position_y*self.tiles_width))
+
+

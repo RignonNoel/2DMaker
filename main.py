@@ -3,15 +3,18 @@
 
 import pygame
 from world import *
+from TilesManager import *
 
 # Import components and system
 from components import *
 from system import *
+from map import *
 
 
 FPS = 60
 RESOLUTION = 45, 30
 TILES_WIDTH = 16
+
 
 ################################
 #  The main core of the program:
@@ -22,28 +25,92 @@ def run():
     # Initialize Pygame stuff
     pygame.init()
     window = pygame.display.set_mode((RESOLUTION[0]*TILES_WIDTH, RESOLUTION[1]*TILES_WIDTH))
-    pygame.display.set_caption("RPG ECS")
+    pygame.display.set_caption("RPG ECS [" + str(RESOLUTION[0]*TILES_WIDTH) + "x" + str(RESOLUTION[1]*TILES_WIDTH) + "]")
     clock = pygame.time.Clock()
     pygame.key.set_repeat(1, 1)
 
     # Initialize world
     world = World()
 
+    # Initialize map
+    map = Map()
+
+    # Initialize tile manager
+    tiles_player = TilesManager(spreedsheet='characters.png', tiles_size=TILES_WIDTH)
+    tiles_map = TilesManager(spreedsheet='basictiles.png', tiles_size=TILES_WIDTH)
+
     # Create a "player" Entity with a few Components.
     player = world.create_entity()
     world.add_component(player, Position(x=0, y=0))
     world.add_component(player, Velocity(x=0, y=0))
-    world.add_component(player, Renderable(image=pygame.image.load("redsquare.png")))
+    world.add_component(player, Collideable())
+    world.add_component(player, Renderable(image=tiles_player.get_tile(4, 0)))
 
-    # Create an ennemy Entity with a few Components.
-    ennemy = world.create_entity()
-    world.add_component(ennemy, Position(x=20, y=0))
-    world.add_component(ennemy, Velocity(x=0, y=0))
-    world.add_component(ennemy, Collideable())
-    world.add_component(ennemy, Renderable(image=pygame.image.load("redsquare.png")))
+    """
+    Create a house to test the map
+    """
+    # Bottom left
+    for x in range(21, 24):
+        bloc = world.create_entity()
+        world.add_component(bloc, Position(x=x, y=3))
+        world.add_component(bloc, Collideable())
+        world.add_component(bloc, Renderable(image=tiles_map.get_tile(0, 0)))
+
+    # Bottom right
+    for x in range(25, 28):
+        bloc = world.create_entity()
+        world.add_component(bloc, Position(x=x, y=3))
+        world.add_component(bloc, Collideable())
+        world.add_component(bloc, Renderable(image=tiles_map.get_tile(0, 0)))
+
+    # Top
+    for x in range(21, 28):
+        bloc = world.create_entity()
+        world.add_component(bloc, Position(x=x, y=9))
+        world.add_component(bloc, Collideable())
+        world.add_component(bloc, Renderable(image=tiles_map.get_tile(0, 0)))
+
+    # Left
+    for y in range(4, 9):
+        bloc = world.create_entity()
+        world.add_component(bloc, Position(x=20, y=y))
+        world.add_component(bloc, Collideable())
+        world.add_component(bloc, Renderable(image=tiles_map.get_tile(1, 0)))
+
+    # Right
+    for y in range(4, 9):
+        bloc = world.create_entity()
+        world.add_component(bloc, Position(x=28, y=y))
+        world.add_component(bloc, Collideable())
+        world.add_component(bloc, Renderable(image=tiles_map.get_tile(1, 0)))
+
+    # Blocs for corner
+    bloc = world.create_entity()
+    world.add_component(bloc, Position(x=20, y=9))
+    world.add_component(bloc, Collideable())
+    world.add_component(bloc, Renderable(image=tiles_map.get_tile(3, 0)))
+
+    bloc = world.create_entity()
+    world.add_component(bloc, Position(x=28, y=9))
+    world.add_component(bloc, Collideable())
+    world.add_component(bloc, Renderable(image=tiles_map.get_tile(3, 0)))
+
+    bloc = world.create_entity()
+    world.add_component(bloc, Position(x=28, y=3))
+    world.add_component(bloc, Collideable())
+    world.add_component(bloc, Renderable(image=tiles_map.get_tile(2, 0)))
+
+    bloc = world.create_entity()
+    world.add_component(bloc, Position(x=20, y=3))
+    world.add_component(bloc, Collideable())
+    world.add_component(bloc, Renderable(image=tiles_map.get_tile(2, 0)))
+
+    """
+    End of the house
+    """
 
     # Create some Processor instances, and asign them to be processed.
-    render_processor = RenderProcessor(window=window, minx=0, maxx=RESOLUTION[0], miny=0, maxy=RESOLUTION[1], tiles_width=TILES_WIDTH)
+    render_processor = RenderProcessor(window=window, minx=0, maxx=RESOLUTION[0], miny=0, maxy=RESOLUTION[1], tiles_width=TILES_WIDTH, map=map, tiles_map=tiles_map, tiles_player=tiles_player)
     physic_processor = PhysicProcessor(minx=0, maxx=RESOLUTION[0], miny=0, maxy=RESOLUTION[1])
     world.add_processor(render_processor)
     world.add_processor(physic_processor)
@@ -66,16 +133,16 @@ def run():
                     player_velocity_component = world.component_for_entity(player, Velocity)
                     player_velocity_component.x = 1
                 elif event.key == pygame.K_UP:
-                    if world.component_for_entity(player, Position).y == 0:
-                        print("Youhou!! That's a jump!")
-                        world.component_for_entity(player, Velocity).y = 4
-                    else:
-                        print("You're not on the floor")
+                    world.component_for_entity(player, Velocity).y = 1
+                elif event.key == pygame.K_DOWN:
+                    world.component_for_entity(player, Velocity).y = -1
                 elif event.key == pygame.K_ESCAPE:
                     running = False
             elif event.type == pygame.KEYUP:
                 if event.key in (pygame.K_LEFT, pygame.K_RIGHT):
                     world.component_for_entity(player, Velocity).x = 0
+                if event.key in (pygame.K_UP, pygame.K_DOWN):
+                    world.component_for_entity(player, Velocity).y = 0
 
         # A single call to world.process() will update all Processors:
         world.process()
