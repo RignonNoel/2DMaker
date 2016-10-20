@@ -33,7 +33,7 @@ def run():
     world = World()
 
     # Initialize map
-    map = Map()
+    map = Map('maps/map_test.txt')
 
     # Initialize tile manager
     tiles_player = TilesManager(spreedsheet='characters.png', tiles_size=TILES_WIDTH)

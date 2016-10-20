@@ -128,13 +128,13 @@ class RenderProcessor(Processor):
         for line in self.map.map:
             compteur_x = 0
             for tile in line:
-                if tile == 0:
+                if tile == '0':
                     self.display_tiles(0, 8, compteur_x, compteur_y, self.tiles_map)
-                if tile == 1:
+                if tile == '1':
                     self.display_tiles(2, 1, compteur_x, compteur_y, self.tiles_map)
-                if tile == 2:
+                if tile == '2':
                     self.display_tiles(4, 1, compteur_x, compteur_y, self.tiles_map)
-                if tile == 3:
+                if tile == '3':
                     self.display_tiles(0, 1, compteur_x, compteur_y, self.tiles_map)
                 if tile == 'e':
                     self.display_tiles(1, 7, compteur_x, compteur_y, self.tiles_map)
