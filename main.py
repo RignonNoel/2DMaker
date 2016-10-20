@@ -36,8 +36,8 @@ def run():
     map = Map('maps/map_test.txt')
 
     # Initialize tile manager
-    tiles_player = TilesManager(spreedsheet='characters.png', tiles_size=TILES_WIDTH)
-    tiles_map = TilesManager(spreedsheet='basictiles.png', tiles_size=TILES_WIDTH)
+    tiles_player = TilesManager(spreedsheet='tiles/characters.png', tiles_size=TILES_WIDTH)
+    tiles_map = TilesManager(spreedsheet='tiles/basictiles.png', tiles_size=TILES_WIDTH)
 
     # Create a "player" Entity with a few Components.
     player = world.create_entity()
