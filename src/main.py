@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-
+import os
 import pygame
 from world import *
 from TilesManager import *
@@ -15,6 +15,8 @@ FPS = 60
 RESOLUTION = 45, 30
 TILES_WIDTH = 16
 
+TILES_FOLDER = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'tiles/')
+MAPS_FOLDER = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'maps/')
 
 ################################
 #  The main core of the program:
@@ -33,11 +35,11 @@ def run():
     world = World()
 
     # Initialize map
-    map = Map('maps/map_test.txt')
+    map = Map(MAPS_FOLDER + '/map_test.txt')
 
     # Initialize tile manager
-    tiles_player = TilesManager(spreedsheet='tiles/characters.png', tiles_size=TILES_WIDTH)
-    tiles_map = TilesManager(spreedsheet='tiles/basictiles.png', tiles_size=TILES_WIDTH)
+    tiles_player = TilesManager(spreedsheet=TILES_FOLDER+'/characters.png', tiles_size=TILES_WIDTH)
+    tiles_map = TilesManager(spreedsheet=TILES_FOLDER+'/basictiles.png', tiles_size=TILES_WIDTH)
 
     # Create a "player" Entity with a few Components.
     player = world.create_entity()
