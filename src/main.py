@@ -8,8 +8,6 @@ from TilesManager import *
 # Import components and system
 from components import *
 from system import *
-from map import *
-
 
 FPS = 60
 RESOLUTION = 45, 30
@@ -34,12 +32,14 @@ def run():
     # Initialize world
     world = World()
 
-    # Initialize map
-    map = Map(MAPS_FOLDER + '/map_test.txt')
-
     # Initialize tile manager
     tiles_player = TilesManager(spreedsheet=TILES_FOLDER+'/characters.png', tiles_size=TILES_WIDTH)
     tiles_map = TilesManager(spreedsheet=TILES_FOLDER+'/basictiles.png', tiles_size=TILES_WIDTH)
+
+    # Init the map as an entity
+    map = world.create_entity()
+    world.add_component(map, Position(x=0, y=RESOLUTION[1]-1))
+    world.add_component(map, Renderable(pygame.image.load('test_map.png'), depth=-1))
 
     # Create a "player" Entity with a few Components.
     player = world.create_entity()
@@ -54,71 +54,19 @@ def run():
         image_top=tiles_player.get_tile(4, 3)
     ))
 
-    """
-    Create a house to test the map
-    """
-    # Bottom left
-    for x in range(21, 24):
-        bloc = world.create_entity()
-        world.add_component(bloc, Position(x=x, y=3))
-        world.add_component(bloc, Collideable())
-        world.add_component(bloc, Renderable(tiles_map.get_tile(0, 0)))
-
-    # Bottom right
-    for x in range(25, 28):
-        bloc = world.create_entity()
-        world.add_component(bloc, Position(x=x, y=3))
-        world.add_component(bloc, Collideable())
-        world.add_component(bloc, Renderable(tiles_map.get_tile(0, 0)))
-
-    # Top
-    for x in range(21, 28):
-        bloc = world.create_entity()
-        world.add_component(bloc, Position(x=x, y=9))
-        world.add_component(bloc, Collideable())
-        world.add_component(bloc, Renderable(tiles_map.get_tile(0, 0)))
-
-    # Left
-    for y in range(4, 9):
-        bloc = world.create_entity()
-        world.add_component(bloc, Position(x=20, y=y))
-        world.add_component(bloc, Collideable())
-        world.add_component(bloc, Renderable(tiles_map.get_tile(1, 0)))
-
-    # Right
-    for y in range(4, 9):
-        bloc = world.create_entity()
-        world.add_component(bloc, Position(x=28, y=y))
-        world.add_component(bloc, Collideable())
-        world.add_component(bloc, Renderable(tiles_map.get_tile(1, 0)))
-
-    # Blocs for corner
-    bloc = world.create_entity()
-    world.add_component(bloc, Position(x=20, y=9))
-    world.add_component(bloc, Collideable())
-    world.add_component(bloc, Renderable(tiles_map.get_tile(3, 0)))
-
-    bloc = world.create_entity()
-    world.add_component(bloc, Position(x=28, y=9))
-    world.add_component(bloc, Collideable())
-    world.add_component(bloc, Renderable(tiles_map.get_tile(3, 0)))
-
-    bloc = world.create_entity()
-    world.add_component(bloc, Position(x=28, y=3))
-    world.add_component(bloc, Collideable())
-    world.add_component(bloc, Renderable(tiles_map.get_tile(2, 0)))
-
+    # Blocs of test for collision
     bloc = world.create_entity()
     world.add_component(bloc, Position(x=20, y=3))
     world.add_component(bloc, Collideable())
     world.add_component(bloc, Renderable(tiles_map.get_tile(2, 0)))
 
-    """
-    End of the house
-    """
+    bloc = world.create_entity()
+    world.add_component(bloc, Position(x=21, y=3))
+    world.add_component(bloc, Collideable())
+    world.add_component(bloc, Renderable(tiles_map.get_tile(2, 0)))
 
     # Create some Processor instances, and asign them to be processed.
-    render_processor = RenderProcessor(window=window, minx=0, maxx=RESOLUTION[0], miny=0, maxy=RESOLUTION[1], tiles_width=TILES_WIDTH, map=map, tiles_map=tiles_map, tiles_player=tiles_player)
+    render_processor = RenderProcessor(window=window, minx=0, maxx=RESOLUTION[0], miny=0, maxy=RESOLUTION[1], tiles_width=TILES_WIDTH, tiles_player=tiles_player)
     physic_processor = PhysicProcessor(minx=0, maxx=RESOLUTION[0], miny=0, maxy=RESOLUTION[1])
     world.add_processor(render_processor)
     world.add_processor(physic_processor)

@@ -110,7 +110,7 @@ class PhysicProcessor(Processor):
 
 
 class RenderProcessor(Processor):
-    def __init__(self, window, minx, maxx, miny, maxy, map, tiles_map, tiles_player, clear_color=(0, 0, 0), tiles_width=16):
+    def __init__(self, window, minx, maxx, miny, maxy, tiles_player, clear_color=(0, 0, 0), tiles_width=16):
         super().__init__()
         self.window = window
         self.clear_color = clear_color
@@ -120,10 +120,8 @@ class RenderProcessor(Processor):
         self.miny = miny
         self.maxy = maxy
 
-        self.map = map
         self.margin = 0
 
-        self.tiles_map = tiles_map
         self.tiles_player = tiles_player
 
         self.tiles_width = tiles_width
@@ -131,9 +129,6 @@ class RenderProcessor(Processor):
     def process(self):
         # Clear the window:
         self.window.fill(self.clear_color)
-
-        # Display the map before each renderable entities
-        self.display_map()
 
         # This will iterate over every Entity that has this Component, and blit it:
         for ent, (position, renderable) in self.world.get_components(Position, Renderable):
@@ -152,25 +147,6 @@ class RenderProcessor(Processor):
 
         # Flip the framebuffers
         pygame.display.flip()
-
-    def display_map(self):
-        compteur_y = 0
-        # Reverse the top/bottom of the map to display
-        for line in self.map.map:
-            compteur_x = 0
-            for tile in line:
-                if tile == '0':
-                    self.display_tiles(0, 8, compteur_x, compteur_y, self.tiles_map)
-                if tile == '1':
-                    self.display_tiles(2, 1, compteur_x, compteur_y, self.tiles_map)
-                if tile == '2':
-                    self.display_tiles(4, 1, compteur_x, compteur_y, self.tiles_map)
-                if tile == '3':
-                    self.display_tiles(0, 1, compteur_x, compteur_y, self.tiles_map)
-                if tile == 'e':
-                    self.display_tiles(1, 7, compteur_x, compteur_y, self.tiles_map)
-                compteur_x += 1
-            compteur_y += 1
 
     def display_image(self, image, position_x, position_y):
         self.window.blit(image, (position_x*self.tiles_width, (self.maxy-position_y-1)*self.tiles_width))
