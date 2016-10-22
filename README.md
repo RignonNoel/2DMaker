@@ -7,6 +7,18 @@ Le système d'EDS est basé sur [Esper](https://pypi.python.org/pypi/esper/0.9.5
 
 ![Screenshot 2DMaker](screenshot.png)
 
+**En l'état actuel la POC montre :**
+
+- La création de component
+- La création de system/processor
+    - gestion des collision
+    - direction des personnages
+    - déplacement
+    - affichage
+- La création d'une entité
+- L'attribution de component à une entité
+- Le lancement de system/processor sur boucle de jeu
+ 
 ## Pour lancer la POC : 
 
 ```
@@ -14,22 +26,19 @@ pip3 install -r requirements.txt
 python3 src/main.py
 ```
 
-**En l'état actuel la POC montre :**
+## Gestionnaire de map (MapManager)
 
- - La création de component
- - La création de system/processor
- - La création d'une entité
- - L'attribution de component à une entité
- - Le lancement de system/processor sur boucle de jeu
- 
-**Ce jeu 2D permet :**
+![Screenshot 2DMaker](screenshot2.png)
 
- - De se déplacer (touche directionnel)
- - De faire des collisions avec un autre bloc (de tout côté)
- - De changer les tiles en fonction de la direction
- - de charger un fichier de map
- 
- 
+**Le gestionnaire de map permet:**
+
+ - D'importer des fichiers TMX comme avec [Tiled](http://www.mapeditor.org/)
+ - De gérer plusieurs couche de calque
+ - De gérer plusieurs fichier de tileset
+ - De générer une image de la map pour export
+
+## Communication (Outils peu tenu à jour actuellement)
+
 Trello : https://trello.com/b/jPkAY8Mj/vision-du-projet
 
 Waffle.io : https://waffle.io/RignonNoel/2DMaker
