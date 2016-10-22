@@ -4,6 +4,7 @@ import os
 import pygame
 from world import *
 from TilesManager import *
+from MapManager import *
 
 # Import components and system
 from components import *
@@ -29,6 +30,9 @@ def run():
     clock = pygame.time.Clock()
     pygame.key.set_repeat(1, 1)
 
+    # Load the map
+    map = Map(MAPS_FOLDER+'/test.tmx')
+
     # Initialize world
     world = World()
 
@@ -37,9 +41,9 @@ def run():
     tiles_map = TilesManager(spreedsheet=TILES_FOLDER+'/basictiles.png', tiles_size=TILES_WIDTH)
 
     # Init the map as an entity
-    map = world.create_entity()
-    world.add_component(map, Position(x=0, y=RESOLUTION[1]-1))
-    world.add_component(map, Renderable(pygame.image.load('test_map.png'), depth=-1))
+    map_entity = world.create_entity()
+    world.add_component(map_entity, Position(x=0, y=RESOLUTION[1]-1))
+    world.add_component(map_entity, Renderable(pygame.image.fromstring(map.render.tobytes(), map.render.size, map.render.mode), depth=-1))
 
     # Create a "player" Entity with a few Components.
     player = world.create_entity()
