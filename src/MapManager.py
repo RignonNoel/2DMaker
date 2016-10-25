@@ -2,19 +2,29 @@ import xml.etree.ElementTree
 import csv
 from PIL import Image as Img
 import re
+import components
+
+
+OBJECT_TYPES_XML = 'config/objecttypes.xml'
 
 
 class Map:
 
     map = []
 
-    def __init__(self, file):
+    def __init__(self, file, world):
+        # save the map file
         self.file = file
+        self.world = world
+
+        """
+        Import the map
+        """
 
         # Parse the Tile Map XML file
         xml_import = xml.etree.ElementTree.parse(self.file).getroot()
 
-        # Import all data from xml
+        # Import data of the map from xml
         self.tile_width = int(xml_import.attrib['tilewidth'])
         self.tile_height = int(xml_import.attrib['tileheight'])
         self.width = int(xml_import.attrib['width'])
@@ -24,20 +34,51 @@ class Map:
         self.render_order = xml_import.attrib['renderorder']
         self.next_object_id = int(xml_import.attrib['nextobjectid'])
 
-        # import tilesets from xml
-        self.tilesets = []
-        for tileset in xml_import.findall('tileset'):
-            new_tileset = Tileset(tileset)
-            self.tilesets.append(new_tileset)
-
-        # import layers from xml
-        self.layers = []
-        for layer in xml_import.findall('layer'):
-            new_layer = Layer(layer)
-            self.layers.append(new_layer)
+        # imports tilesets and layers
+        self.tilesets = self.import_tilesets(xml_import)
+        self.layers = self.import_layers(xml_import)
 
         # generate render
         self.render = self.get_render()
+
+        """
+        Import entities
+        """
+        # Import objecttype configured
+        self.objecttypes = self.import_object_types()
+
+        # import entities
+        self.entities = []
+        for objectgroup in xml_import.findall('objectgroup'):
+            self.entities.extend(self.import_entities(objectgroup, self.objecttypes))
+
+        # generate entities in the world
+        for entity in self.entities:
+            new_entity = world.create_entity()
+            for property in entity.type.properties.keys():
+                component_name = property.split('/')[0]
+                attribut_name = property.split('/')[1]
+
+                method_of_component = getattr(components, component_name)
+                world.add_component(new_entity, method_of_component())
+
+    def import_tilesets(self, xml):
+        # import tilesets from xml
+        tilesets = []
+        for tileset in xml.findall('tileset'):
+            new_tileset = Tileset(tileset)
+            tilesets.append(new_tileset)
+
+        return tilesets
+
+    def import_layers(self, xml):
+        # import layers from xml
+        layers = []
+        for layer in xml.findall('layer'):
+            new_layer = Layer(layer)
+            layers.append(new_layer)
+
+        return layers
 
     def get_render(self):
         # Search all used tiles to make a preload
@@ -55,8 +96,6 @@ class Map:
                 if id_tile in range(tileset.first_gid, tileset.first_gid + tileset.tile_count):
                     tiles_render[id_tile] = tileset.get_tile_by_id(id_tile)
 
-        print(tiles_render)
-
         # Create a new surface to add tiles inside
         render = Img.new(mode="RGBA", size=(self.width*self.tile_width, self.height*self.tile_height))
 
@@ -71,6 +110,45 @@ class Map:
                     column_id += 1
                 line_id += 1
         return render
+
+    def import_object_types(self):
+        xml_import = xml.etree.ElementTree.parse(OBJECT_TYPES_XML).getroot()
+        objecttypes = dict()
+        for objecttype in xml_import.findall('objecttype'):
+            objecttypes[objecttype.attrib['name']] = ObjectType(objecttype)
+
+        return objecttypes
+
+    def import_entities(self, xml, objecttypes):
+        entities = []
+        for entity in xml.findall('object'):
+            entities.append(Entity(entity, objecttypes))
+
+        return entities
+
+
+class Entity:
+
+    def __init__(self, object, objecttypes):
+        self.id = object.attrib['id']
+        self.x = int(object.attrib['x'])
+        self.y = int(object.attrib['y'])
+        self.width = int(object.attrib['width'])
+        self.height = int(object.attrib['height'])
+
+        if 'type' in object.attrib.keys():
+            if object.attrib['type'] in objecttypes.keys():
+                self.type = objecttypes[object.attrib['type']]
+
+
+class ObjectType:
+
+    def __init__(self, objecttype):
+        self.name = objecttype.attrib['name']
+
+        self.properties = dict()
+        for property in objecttype.findall('property'):
+            self.properties[property.attrib['name']] = property.attrib['default']
 
 
 class Tileset:
@@ -100,7 +178,6 @@ class Tileset:
         columns = id % self.columns
         line = id // self.columns
 
-        print(id)
         # Get and return the tile
         return self.get_tile_by_position(columns, line)
 
@@ -111,9 +188,7 @@ class Tileset:
         x_max = x_min + tile_width*self.tile_width
         y_max = y_min + tile_height*self.tile_height
         rect = (x_min, y_min, x_max, y_max)
-        print(rect)
         tile = self.image.image.crop(rect)
-        print(tile.size)
 
         return tile
 

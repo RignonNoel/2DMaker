@@ -30,11 +30,11 @@ def run():
     clock = pygame.time.Clock()
     pygame.key.set_repeat(1, 1)
 
-    # Load the map
-    map = Map(MAPS_FOLDER+'/test.tmx')
-
     # Initialize world
     world = World()
+
+    # Load the map
+    map = Map(MAPS_FOLDER+'/test.tmx', world)
 
     # Initialize tile manager
     tiles_player = TilesManager(spreedsheet=TILES_FOLDER+'/characters.png', tiles_size=TILES_WIDTH)

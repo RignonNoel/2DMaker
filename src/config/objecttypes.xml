@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<objecttypes>
+ <objecttype name="ko" color="#3232b4">
+  <property name="Position/x" type="string" default="2"/>
+  <property name="Position/y" type="string" default="3"/>
+ </objecttype>
+</objecttypes>
