@@ -50,17 +50,34 @@ class Map:
         # import entities
         self.entities = []
         for objectgroup in xml_import.findall('objectgroup'):
-            self.entities.extend(self.import_entities(objectgroup, self.objecttypes))
+            self.entities.extend(self.import_entities(objectgroup))
 
         # generate entities in the world
         for entity in self.entities:
             new_entity = world.create_entity()
-            for property in entity.type.properties.keys():
-                component_name = property.split('/')[0]
-                attribut_name = property.split('/')[1]
+            print(entity.x)
+            print(entity.y)
+            world.add_component(new_entity, components.Position(x=entity.x, y=entity.y))
+            if entity.type:
+                for property in entity.type.properties.keys():
+                    component_name = property.split('/')[0]
+                    attribut_name = property.split('/')[1]
 
-                method_of_component = getattr(components, component_name)
-                world.add_component(new_entity, method_of_component())
+                    # Get the class of component
+                    method_of_component = getattr(components, component_name)
+
+                    # Init component
+                    component = method_of_component()
+                    if entity.type.properties[property][0] == 'string':
+                        default = str(entity.type.properties[property][1])
+                    elif entity.type.properties[property][0] == 'int':
+                        default = int(entity.type.properties[property][1])
+                    elif entity.type.properties[property][0] == 'bool':
+                        default = bool(entity.type.properties[property][1])
+
+                    setattr(component, attribut_name, default)
+                    # Add component to entity
+                    world.add_component(new_entity, component)
 
     def import_tilesets(self, xml):
         # import tilesets from xml
@@ -119,26 +136,28 @@ class Map:
 
         return objecttypes
 
-    def import_entities(self, xml, objecttypes):
+    def import_entities(self, xml):
         entities = []
         for entity in xml.findall('object'):
-            entities.append(Entity(entity, objecttypes))
+            entities.append(Entity(entity, self.objecttypes, self.width, self.height, self.tile_height, self.tile_width))
 
         return entities
 
 
 class Entity:
 
-    def __init__(self, object, objecttypes):
+    def __init__(self, object, objecttypes, width, height, tile_height, tile_width):
         self.id = object.attrib['id']
-        self.x = int(object.attrib['x'])
-        self.y = int(object.attrib['y'])
-        self.width = int(object.attrib['width'])
-        self.height = int(object.attrib['height'])
+        self.x = int(object.attrib['x'])//tile_width
+        self.y = (height*tile_height-int(object.attrib['y']))//tile_height
+        self.width = int(object.attrib['width'])//tile_width
+        self.height = int(object.attrib['height'])//tile_height
 
         if 'type' in object.attrib.keys():
             if object.attrib['type'] in objecttypes.keys():
                 self.type = objecttypes[object.attrib['type']]
+        else:
+            self.type = None
 
 
 class ObjectType:
@@ -148,7 +167,7 @@ class ObjectType:
 
         self.properties = dict()
         for property in objecttype.findall('property'):
-            self.properties[property.attrib['name']] = property.attrib['default']
+            self.properties[property.attrib['name']] = (property.attrib['type'], property.attrib['default'])
 
 
 class Tileset:
