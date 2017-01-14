@@ -5,6 +5,9 @@ import pygame
 from world import *
 from TilesManager import *
 from MapManager import *
+import threading
+import time
+from DebugManager import DebugManager
 
 # Import components and system
 from components import *
@@ -74,6 +77,12 @@ def run():
     physic_processor = PhysicProcessor(minx=0, maxx=RESOLUTION[0], miny=0, maxy=RESOLUTION[1])
     world.add_processor(render_processor)
     world.add_processor(physic_processor)
+
+    # Launch debug console in thread
+    debug_manager = DebugManager()
+    console_thread = threading.Thread(target=debug_manager.run)
+    console_thread.setDaemon(True)
+    console_thread.start()
 
     running = True
     while running:
