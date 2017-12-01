@@ -1,11 +1,16 @@
 # 2DMaker
-Moteur de jeux 2D
 
-L'état actuel est une preuve de concept utilisant le paradygme d'Entity-Component-System
+Moteur de jeux 2D en python.
 
-Le système d'EDS est basé sur [Esper](https://pypi.python.org/pypi/esper/0.9.5) mais ce dernier a était complétement intégré vu sa simplicité et suite à de rapide limitation
+L'état actuel est une preuve de concept utilisant le 
+paradygme d'Entity-Component-System.
 
-![Screenshot 2DMaker](screenshot.png)
+Le système d'ECS est basé sur 
+[Esper](https://pypi.python.org/pypi/esper/0.9.5) 
+mais ce dernier a était complétement intégré vu sa 
+simplicité et suite à de rapide limitation
+
+![Screenshot 2DMaker](static/screenshot.png)
 
 **En l'état actuel la POC montre :**
 
@@ -21,14 +26,14 @@ Le système d'EDS est basé sur [Esper](https://pypi.python.org/pypi/esper/0.9.5
  
 ## Pour lancer la POC : 
 
-```
-pip3 install -r requirements.txt
-python3 src/main.py
+```python
+pip install -r requirements.txt
+python src/main.py
 ```
 
 ## Gestionnaire de map (MapManager)
 
-![Screenshot 2DMaker](screenshot2.png)
+![Screenshot 2DMaker](static/screenshot2.png)
 
 **Le gestionnaire de map permet:**
 
@@ -36,11 +41,3 @@ python3 src/main.py
  - De gérer plusieurs couche de calque
  - De gérer plusieurs fichier de tileset
  - De générer une image de la map pour export
-
-## Communication (Outils peu tenu à jour actuellement)
-
-Trello : https://trello.com/b/jPkAY8Mj/vision-du-projet
-
-Waffle.io : https://waffle.io/RignonNoel/2DMaker
-
-Wiki : https://github.com/RignonNoel/2DMaker/wiki
