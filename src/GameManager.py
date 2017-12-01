@@ -1,10 +1,13 @@
 import pygame
-from MapManager import *
+from MapManager import Map
 import threading
 from DebugManager import DebugManager
 
 # Import components and system
-from systems.system import *
+from systems.PhysicProcessor import PhysicProcessor
+from systems.RenderProcessor import RenderProcessor
+
+from world import World
 
 # Import settings
 import settings
