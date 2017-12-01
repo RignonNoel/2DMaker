@@ -7,7 +7,7 @@ from DebugManager import DebugManager
 from systems.PhysicProcessor import PhysicProcessor
 from systems.RenderProcessor import RenderProcessor
 
-from world import World
+from ECS.world import World
 
 # Import settings
 import settings

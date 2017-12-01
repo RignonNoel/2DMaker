@@ -1,5 +1,5 @@
 from functools import lru_cache
-from templates import Processor
+from ECS.templates import Processor
 
 class World:
     def __init__(self):

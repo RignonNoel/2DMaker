@@ -1,6 +1,6 @@
 import pygame
 
-from world import *
+from ECS.world import *
 from components.components import *
 from tiles.Tileset import *
 
