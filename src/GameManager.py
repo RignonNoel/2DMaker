@@ -4,7 +4,7 @@ import threading
 from DebugManager import DebugManager
 
 # Import components and system
-from system import *
+from systems.system import *
 
 # Import settings
 import settings

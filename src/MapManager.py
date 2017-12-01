@@ -211,7 +211,7 @@ class Tileset:
 class Image:
 
     def __init__(self, image):
-        self.source = re.compile("static/tiles/.*").findall(image.attrib['source'])[0]
+        self.source = re.compile("src/static/tiles/.*").findall(image.attrib['source'])[0]
         self.trans = image.attrib['trans']
         self.width = image.attrib['width']
         self.height = image.attrib['height']

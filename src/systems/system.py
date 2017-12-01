@@ -11,7 +11,7 @@ class PhysicProcessor(Processor):
         super().__init__()
         self.minx = minx
         self.maxx = maxx
-        self.miny = mitatny
+        self.miny = miny
         self.maxy = maxy
 
     def process(self):
