@@ -9,7 +9,8 @@ from system import *
 # Import settings
 import settings
 
-from TileManager import TileManager
+from tiles.TilesetManager import TilesetManager
+from components.components import *
 
 
 class GameManager:
@@ -29,8 +30,8 @@ class GameManager:
         map = Map(settings.MAPS_FOLDER + '/test.tmx', self.world)
 
         # Initialize tile manager
-        self.tiles_player = TileManager.get_player_tileset()
-        self.tiles_map = TileManager.get_map_tileset()
+        self.tiles_player = TilesetManager.get_player_tileset()
+        self.tiles_map = TilesetManager.get_map_tileset()
 
         # Init the map as an entity
         map_entity = self.world.create_entity()

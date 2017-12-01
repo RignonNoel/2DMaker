@@ -2,8 +2,8 @@ from PIL import Image
 import pygame
 
 from world import *
-from components import *
-from Tileset import *
+from components.components import *
+from tiles.Tileset import *
 
 ################################
 #  Define some Processors:

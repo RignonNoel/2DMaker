@@ -2,7 +2,7 @@ import xml.etree.ElementTree
 import csv
 from PIL import Image as Img
 import re
-import components
+import components.components as components
 import settings
 
 
