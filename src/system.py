@@ -3,7 +3,7 @@ import pygame
 
 from world import *
 from components import *
-from TilesManager import *
+from Tileset import *
 
 ################################
 #  Define some Processors:

@@ -55,8 +55,6 @@ class Map:
         # generate entities in the world
         for entity in self.entities:
             new_entity = world.create_entity()
-            print(entity.x)
-            print(entity.y)
             world.add_component(new_entity, components.Position(x=entity.x, y=entity.y))
             if entity.type:
                 for property in entity.type.properties.keys():

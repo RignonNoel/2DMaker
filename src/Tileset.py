@@ -1,7 +1,7 @@
 import pygame
 
 
-class TilesManager:
+class Tileset:
     def __init__(self, spreedsheet, tiles_size=16):
         self.tiles_size = tiles_size
         self.spreedsheet = pygame.image.load(spreedsheet)
