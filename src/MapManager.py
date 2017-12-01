@@ -3,9 +3,7 @@ import csv
 from PIL import Image as Img
 import re
 import components
-
-
-OBJECT_TYPES_XML = 'config/objecttypes.xml'
+import settings
 
 
 class Map:
@@ -127,7 +125,7 @@ class Map:
         return render
 
     def import_object_types(self):
-        xml_import = xml.etree.ElementTree.parse(OBJECT_TYPES_XML).getroot()
+        xml_import = xml.etree.ElementTree.parse(settings.OBJECT_TYPES_XML).getroot()
         objecttypes = dict()
         for objecttype in xml_import.findall('objecttype'):
             objecttypes[objecttype.attrib['name']] = ObjectType(objecttype)
@@ -213,7 +211,7 @@ class Tileset:
 class Image:
 
     def __init__(self, image):
-        self.source = re.compile("tiles/.*").findall(image.attrib['source'])[0]
+        self.source = re.compile("static/tiles/.*").findall(image.attrib['source'])[0]
         self.trans = image.attrib['trans']
         self.width = image.attrib['width']
         self.height = image.attrib['height']
