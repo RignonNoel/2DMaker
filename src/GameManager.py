@@ -1,5 +1,5 @@
 import pygame
-from MapManager import Map
+from libs.MapManager.MapManager import Map
 import threading
 from DebugManager import DebugManager
 
@@ -30,7 +30,14 @@ class GameManager:
         self.world = World()
 
         # Load the map
-        map = Map(settings.MAPS_FOLDER + '/test.tmx', self.world)
+        map = Map(
+            settings.MAPS_FOLDER + '/test.tmx',
+            settings.OBJECT_TYPES_XML
+        )
+
+        # todo : Insert all map's object in our worlds
+        # map.get_object_types()
+        # map.get_objects()
 
         # Initialize tile manager
         self.tiles_player = TilesetManager.get_player_tileset()
@@ -48,9 +55,9 @@ class GameManager:
             map_entity,
             Renderable(
                 pygame.image.fromstring(
-                    map.render.tobytes(),
-                    map.render.size,
-                    map.render.mode
+                    map.get_render().tobytes(),
+                    map.get_render().size,
+                    map.get_render().mode
                 ),
                 depth=-1
             )

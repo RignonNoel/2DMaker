@@ -220,27 +220,48 @@ class Image:
 
 class Layer:
 
+    name = None
+    width = None
+    height = None
+    encoding = None
+    data = list()
+
     def __init__(self, layer):
         self.name = layer.attrib['name']
         self.width = layer.attrib['width']
         self.height = layer.attrib['height']
 
         # Init data if exist
-        for data in layer.findall('data'):
-            self.encoding = data.attrib['encoding']
-            if self.encoding == 'csv':
-                self.data = self.get_data(data.text)
+        data = layer.find('data')
+        self.encoding = data.get('encoding')
+        self.__extract_data(data.text)
 
-    def get_data(self, csv_text):
-        data = []
-        compteur = 0
-        line = []
-        for element in csv_text.split(','):
-            compteur += 1
-            line.append(int(element))
+    def __extract_data(self, text):
+        """
+        Extract the data of the layout
+        :param text: The layout's data
+        :return: None
+        """
+        if self.encoding == 'csv':
+            self.data = self.__extract_data_from_csv(text)
 
-            if compteur % 45 == 0:
-                data.append(line)
-                line = []
+    @staticmethod
+    def __extract_data_from_csv(csv):
+        """
+        Extract all the layout's data encoded in CSV
+        :return:
+        """
+        data = list()
+        text = csv.strip()
+
+        for line in text.split('\n'):
+            buffer = list()
+            for tile_id in line.split(','):
+                try:
+                    buffer.append(int(tile_id))
+                except ValueError:
+                    pass
+
+            data.append(buffer)
 
         return data
