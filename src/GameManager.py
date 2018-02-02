@@ -210,9 +210,9 @@ class GameManager:
         self.world.add_processor(render_processor)
 
         physic_processor = PhysicProcessor(
-            minx=0,
-            maxx=self.map.get_width(),
-            miny=0,
-            maxy=self.map.get_height()
+            min_x=0,
+            max_x=self.map.get_width(),
+            min_y=0,
+            max_y=self.map.get_height()
         )
         self.world.add_processor(physic_processor)
