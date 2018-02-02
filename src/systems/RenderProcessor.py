@@ -2,7 +2,6 @@ import pygame
 
 from ECS.world import *
 from components.components import *
-from tiles.Tileset import *
 
 
 class RenderProcessor(Processor):
@@ -67,7 +66,11 @@ class RenderProcessor(Processor):
 
     def display_image(self, image, position_x, position_y):
         self.window.blit(
-            image,
+            pygame.image.fromstring(
+                image.tobytes(),
+                image.size,
+                image.mode
+            ),
             (
                 position_x*self.tiles_size,
                 (self.max_y-position_y-1)*self.tiles_size

@@ -1,4 +1,4 @@
-from .TileSet import TileSet
+from libs.Tiles.TileSet import TileSet
 from .Layer import Layer
 
 import xml.etree.ElementTree

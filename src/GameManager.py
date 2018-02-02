@@ -11,7 +11,7 @@ import components.components as components
 
 from ECS.world import World
 from DebugManager import DebugManager
-from tiles.TilesetManager import TilesetManager
+from libs.Tiles.TilesetManager import TilesetManager
 from libs.MapManager.MapManager import Map
 
 
@@ -67,11 +67,7 @@ class GameManager:
         self.world.add_component(
             map_entity,
             Renderable(
-                pygame.image.fromstring(
-                    render.tobytes(),
-                    render.size,
-                    render.mode
-                ),
+                render,
                 depth=-1
             )
         )
@@ -157,10 +153,10 @@ class GameManager:
         self.world.add_component(self.player, Velocity(x=0, y=0))
         self.world.add_component(self.player, Collideable())
         self.world.add_component(self.player, Renderable(
-            image_bottom=self.tiles_player.get_tile(4, 0),
-            image_left=self.tiles_player.get_tile(4, 1),
-            image_right=self.tiles_player.get_tile(4, 2),
-            image_top=self.tiles_player.get_tile(4, 3)
+            image_bottom=self.tiles_player.get_tile_by_position(4, 0),
+            image_left=self.tiles_player.get_tile_by_position(4, 1),
+            image_right=self.tiles_player.get_tile_by_position(4, 2),
+            image_top=self.tiles_player.get_tile_by_position(4, 3)
         ))
 
     def load_map(self, map_file, configuration_file):

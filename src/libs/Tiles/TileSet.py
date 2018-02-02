@@ -35,10 +35,10 @@ class TileSet:
         columns = tile_id % self.columns
         line = tile_id // self.columns
 
-        return self._get_tile_by_position(columns, line)
+        return self.get_tile_by_position(columns, line)
 
-    def _get_tile_by_position(self, position_x, position_y,
-                              tile_width=1, tile_height=1):
+    def get_tile_by_position(self, position_x, position_y,
+                             tile_width=1, tile_height=1):
         """
         Private function used to get a tile from the image
         :param position_x: Position x of the tile

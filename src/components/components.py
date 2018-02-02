@@ -56,5 +56,3 @@ class Renderable:
             self.image_right = image_bottom
 
         self.depth = depth
-        self.w = image_bottom.get_width()
-        self.h = image_bottom.get_height()

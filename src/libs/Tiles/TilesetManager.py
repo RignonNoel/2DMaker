@@ -1,4 +1,4 @@
-from tiles.Tileset import Tileset
+from libs.Tiles.TileSet import TileSet
 import settings
 
 
@@ -17,9 +17,12 @@ class TilesetManager:
         :param filename: The name of the file we want to use
         :return: A Tileset instance
         """
-        return Tileset(
-            filename='{0}/{1}'.format(settings.TILES_FOLDER, filename),
-            tiles_size=tile_size
+        return TileSet(
+            first_gid=0,
+            tile_width=tile_size,
+            tile_height=tile_size,
+            columns=0,
+            image_path='{0}/{1}'.format(settings.TILES_FOLDER, filename)
         )
 
     @staticmethod

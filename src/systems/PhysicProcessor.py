@@ -1,6 +1,5 @@
 from ECS.world import *
 from components.components import *
-from tiles.Tileset import *
 
 
 class PhysicProcessor(Processor):
