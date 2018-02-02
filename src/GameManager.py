@@ -97,20 +97,39 @@ class GameManager:
                     running = False
                 elif event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_LEFT:
-                        self.world.component_for_entity(self.player, Velocity).x = -1
+                        self.world.component_for_entity(
+                            self.player,
+                            Velocity
+                        ).x = -1
                     elif event.key == pygame.K_RIGHT:
-                        self.world.component_for_entity(self.player, Velocity).x = 1
+                        self.world.component_for_entity(
+                            self.player,
+                            Velocity
+                        ).x = 1
                     elif event.key == pygame.K_UP:
-                        self.world.component_for_entity(self.player, Velocity).y = 1
+                        self.world.component_for_entity(
+                            self.player,
+                            Velocity
+                        ).y = 1
                     elif event.key == pygame.K_DOWN:
-                        self.world.component_for_entity(self.player, Velocity).y = -1
+                        self.world.component_for_entity(
+                            self.player,
+                            Velocity
+                        ).y = -1
                     elif event.key == pygame.K_ESCAPE:
                         running = False
+
                 elif event.type == pygame.KEYUP:
                     if event.key in (pygame.K_LEFT, pygame.K_RIGHT):
-                        self.world.component_for_entity(self.player, Velocity).x = 0
+                        self.world.component_for_entity(
+                            self.player,
+                            Velocity
+                        ).x = 0
                     if event.key in (pygame.K_UP, pygame.K_DOWN):
-                        self.world.component_for_entity(self.player, Velocity).y = 0
+                        self.world.component_for_entity(
+                            self.player,
+                            Velocity
+                        ).y = 0
 
             # A single call to world.process() will update all Processors:
             self.world.process()

@@ -36,7 +36,8 @@ class Direction:
 
 
 class Renderable:
-    def __init__(self, image_bottom, image_top=None, image_left=None, image_right=None, depth=0):
+    def __init__(self, image_bottom, image_top=None,
+                 image_left=None, image_right=None, depth=0):
         self.image_bottom = image_bottom
 
         if image_top:
