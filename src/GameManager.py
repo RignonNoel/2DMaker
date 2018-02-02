@@ -200,12 +200,11 @@ class GameManager:
         """
         render_processor = RenderProcessor(
             window=self.window,
-            minx=0,
-            maxx=self.map.get_width(),
-            miny=0,
-            maxy=self.map.get_height(),
-            tiles_width=self.map.get_tile_width(),
-            tiles_player=self.tiles_player
+            min_x=0,
+            max_x=self.map.get_width(),
+            min_y=0,
+            max_y=self.map.get_height(),
+            tiles_size=self.map.get_tile_width()
         )
         self.world.add_processor(render_processor)
 
