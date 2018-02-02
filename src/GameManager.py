@@ -111,16 +111,9 @@ class GameManager:
                     running = False
                 elif event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_LEFT:
-                        # Here is a way to directly access a specific Entity's
-                        # Velocity Component's attribute (y) without making a
-                        # temporary variable.
                         self.world.component_for_entity(self.player, Velocity).x = -1
                     elif event.key == pygame.K_RIGHT:
-                        # For clarity, here is an alternate way in which a
-                        # temporary variable is created and modified. The previous
-                        # way above is recommended instead.
-                        player_velocity_component = self.world.component_for_entity(self.player, Velocity)
-                        player_velocity_component.x = 1
+                        self.world.component_for_entity(self.player, Velocity).x = 1
                     elif event.key == pygame.K_UP:
                         self.world.component_for_entity(self.player, Velocity).y = 1
                     elif event.key == pygame.K_DOWN:
