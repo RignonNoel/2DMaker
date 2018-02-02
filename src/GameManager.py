@@ -82,17 +82,6 @@ class GameManager:
         # Create a "player" Entity with a few Components.
         self.init_player()
 
-        # Blocs of test for collision
-        bloc = self.world.create_entity()
-        self.world.add_component(bloc, Position(x=20, y=3))
-        self.world.add_component(bloc, Collideable())
-        self.world.add_component(bloc, Renderable(self.tiles_map.get_tile(2, 0)))
-
-        bloc = self.world.create_entity()
-        self.world.add_component(bloc, Position(x=21, y=3))
-        self.world.add_component(bloc, Collideable())
-        self.world.add_component(bloc, Renderable(self.tiles_map.get_tile(2, 0)))
-
         # Create some Processor instances
         # and assign them to be processed.
         self.launch_processors()
