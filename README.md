@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/RignonNoel/2DMaker.svg?branch=master)](https://travis-ci.org/RignonNoel/2DMaker)
+
 # 2DMaker
 
 Moteur de jeux 2D en python.
