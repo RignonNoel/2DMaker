@@ -1,4 +1,5 @@
 import pygame
+import os
 from libs.MapManager.MapManager import Map
 import threading
 from DebugManager import DebugManager
@@ -14,14 +15,16 @@ import settings
 
 from tiles.TilesetManager import TilesetManager
 from components.components import *
+import components.components as components
 
 
 class GameManager:
 
+    map = None
+    window = None
+
     def __init__(self):
         pygame.init()
-
-        self.init_window()
 
         self.clock = pygame.time.Clock()
         pygame.key.set_repeat(1, 1)
@@ -30,34 +33,47 @@ class GameManager:
         self.world = World()
 
         # Load the map
-        map = Map(
-            settings.MAPS_FOLDER + '/test.tmx',
-            settings.OBJECT_TYPES_XML
+        map_file = settings.MAPS_FOLDER + '/test.tmx'
+        configuration_file = settings.OBJECT_TYPES_XML
+        self.load_map(
+            map_file=map_file,
+            configuration_file=configuration_file
         )
 
-        # todo : Insert all map's object in our worlds
-        # map.get_object_types()
-        # map.get_objects()
+        # Init a window to display interface
+        self.init_window()
+
+        # generate entities in the world
+        self.load_entities()
 
         # Initialize tile manager
-        self.tiles_player = TilesetManager.get_player_tileset()
-        self.tiles_map = TilesetManager.get_map_tileset()
+        self.tiles_player = TilesetManager.get_player_tileset(
+            tile_size=self.map.get_tile_width()
+        )
+        self.tiles_map = TilesetManager.get_map_tileset(
+            tile_size=self.map.get_tile_width()
+        )
 
         # Init the map as an entity
         map_entity = self.world.create_entity()
 
         self.world.add_component(
             map_entity,
-            Position(x=0, y=settings.RESOLUTION[1] - 1)
+            Position(
+                x=0,
+                y=self.map.get_height() - 1
+            )
         )
+
+        render = self.map.get_render()
 
         self.world.add_component(
             map_entity,
             Renderable(
                 pygame.image.fromstring(
-                    map.get_render().tobytes(),
-                    map.get_render().size,
-                    map.get_render().mode
+                    render.tobytes(),
+                    render.size,
+                    render.mode
                 ),
                 depth=-1
             )
@@ -77,15 +93,12 @@ class GameManager:
         self.world.add_component(bloc, Collideable())
         self.world.add_component(bloc, Renderable(self.tiles_map.get_tile(2, 0)))
 
-        # Create some Processor instances, and asign them to be processed.
-        render_processor = RenderProcessor(window=self.window, minx=0, maxx=settings.RESOLUTION[0], miny=0,
-                                           maxy=settings.RESOLUTION[1], tiles_width=settings.TILES_WIDTH,
-                                           tiles_player=self.tiles_player)
-        physic_processor = PhysicProcessor(minx=0, maxx=settings.RESOLUTION[0], miny=0, maxy=settings.RESOLUTION[1])
-        self.world.add_processor(render_processor)
-        self.world.add_processor(physic_processor)
+        # Create some Processor instances
+        # and assign them to be processed.
+        self.launch_processors()
 
-        # Launch debug console in thread
+        # Launch a debugging console
+        # in a new thread
         debug_manager = DebugManager()
         console_thread = threading.Thread(target=debug_manager.run)
         console_thread.setDaemon(True)
@@ -132,8 +145,8 @@ class GameManager:
         """
         self.window = pygame.display.set_mode(
             (
-                settings.RESOLUTION[0] * settings.TILES_WIDTH,
-                settings.RESOLUTION[1] * settings.TILES_WIDTH
+                self.map.get_width() * self.map.get_tile_width(),
+                self.map.get_height() * self.map.get_tile_height()
             )
         )
 
@@ -151,3 +164,76 @@ class GameManager:
             image_right=self.tiles_player.get_tile(4, 2),
             image_top=self.tiles_player.get_tile(4, 3)
         ))
+
+    def load_map(self, map_file, configuration_file):
+        """
+        Load a new map
+        :param map_file: A TMX file of the map we want to load
+        :param configuration_file: An XML configuration file of TMX
+        :return: Nothing
+        """
+        self.map = Map(
+            map_file,
+            configuration_file
+        )
+
+    def load_entities(self):
+        """
+        Load entity of the current map
+        :return: Nothing
+        """
+        for entity in self.map.get_objects():
+            new_entity = self.world.create_entity()
+            self.world.add_component(
+                new_entity,
+                Position(
+                    x=entity['position_x']//self.map.get_tile_height(),
+                    y=entity['position_y']//self.map.get_tile_width()
+                )
+            )
+            if entity['object_type']:
+                object_type = self.map.get_object_type(entity['object_type'])
+                for property in object_type['properties'].keys():
+                    component_name = property.split('/')[0]
+                    attribut_name = property.split('/')[1]
+
+                    # Get the class of component
+                    method_of_component = getattr(components, component_name)
+
+                    # Init component
+                    component = method_of_component()
+                    property_type = object_type['properties'][property][0]
+                    if property_type == 'string':
+                        default = str(object_type['properties'][property][1])
+                    elif property_type == 'int':
+                        default = int(object_type['properties'][property][1])
+                    elif property_type == 'bool':
+                        default = bool(object_type['properties'][property][1])
+
+                    setattr(component, attribut_name, default)
+                    # Add component to entity
+                    self.world.add_component(new_entity, component)
+
+    def launch_processors(self):
+        """
+        Launch all processors
+        :return: Nothing
+        """
+        render_processor = RenderProcessor(
+            window=self.window,
+            minx=0,
+            maxx=self.map.get_width(),
+            miny=0,
+            maxy=self.map.get_height(),
+            tiles_width=self.map.get_tile_width(),
+            tiles_player=self.tiles_player
+        )
+        self.world.add_processor(render_processor)
+
+        physic_processor = PhysicProcessor(
+            minx=0,
+            maxx=self.map.get_width(),
+            miny=0,
+            maxy=self.map.get_height()
+        )
+        self.world.add_processor(physic_processor)

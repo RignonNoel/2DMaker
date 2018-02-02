@@ -7,7 +7,7 @@ class Tileset:
     Library of Tile with access method in this that library
     """
 
-    def __init__(self, filename, margin=0, tiles_size=settings.TILES_WIDTH):
+    def __init__(self, filename, tiles_size, margin=0):
         """
         Constructor
         :param filename: The filename of the tileset file

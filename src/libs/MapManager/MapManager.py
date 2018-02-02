@@ -95,6 +95,18 @@ class Map:
 
         return layers
 
+    def get_tile_width(self):
+        return self.tile_width
+
+    def get_tile_height(self):
+        return self.tile_height
+
+    def get_width(self):
+        return self.width
+
+    def get_height(self):
+        return self.height
+
     def get_render(self):
         """
         Return an image rendering of the map
@@ -165,6 +177,16 @@ class Map:
             self.__import_object_types()
             return self.object_types
 
+    def get_object_type(self, name):
+        if self.object_types is None:
+            self.__import_object_types()
+
+        for object_type in self.object_types:
+            if object_type['name'] == name:
+                return object_type
+
+        return None
+
     def __import_object_types(self):
         """
         Create a dictionnary with all object_types of the configuration
@@ -204,11 +226,15 @@ class Map:
             for object in object_group.findall('object'):
                 new_object = dict()
                 new_object['object_type'] = object.get('type')
-                new_object['gid'] = object.get('gid')
-                new_object['position_x'] = object.get('x')
-                new_object['position_y'] = object.get('y')
-                new_object['width'] = object.get('width')
-                new_object['height'] = object.get('height')
+                new_object['gid'] = int(object.get('gid'))
+                new_object['position_x'] = int(object.get('x'))
+
+                # Mirror effect between the import and the game
+                y = self.height * self.tile_height - int(object.get('y'))
+                new_object['position_y'] = y
+
+                new_object['width'] = int(object.get('width'))
+                new_object['height'] = int(object.get('height'))
 
                 objects.append(new_object)
 
