@@ -1,21 +1,18 @@
 import pygame
-import os
-from libs.MapManager.MapManager import Map
 import threading
-from DebugManager import DebugManager
 
-# Import components and system
+import settings
+
 from systems.PhysicProcessor import PhysicProcessor
 from systems.RenderProcessor import RenderProcessor
 
-from ECS.world import World
-
-# Import settings
-import settings
-
-from tiles.TilesetManager import TilesetManager
 from components.components import *
 import components.components as components
+
+from ECS.world import World
+from DebugManager import DebugManager
+from tiles.TilesetManager import TilesetManager
+from libs.MapManager.MapManager import Map
 
 
 class GameManager:
